@@ -22,6 +22,7 @@ private fun bluetooth(){
             val device = bluetoothAdapter.getRemoteDevice("B0:B2:1C:A7:69:62")
             bluetoothGatt = device.connectGatt(this,false,gattCallback)
             Toast.makeText(context,"connected", Toast.LENGTH_SHORT).show()
-        } ```
+        }
+```
 In the above block, the MAC address of the target ESP32 module can be changed depending on the hardware used.
         
