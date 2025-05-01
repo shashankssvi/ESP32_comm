@@ -132,6 +132,16 @@ ElevatedButton(onPressed: (){
                 receive()
               },);
 ```
->    
+> The LED in ESP32 will blink ON/OFF every 10 milliseconds
+```
+void loop() {
+  if (deviceConnected) {
+    digitalWrite(led, HIGH);
+    delay(1000);
+  } else {
+    digitalWrite(led, millis() / 100 % 2 == 0 ? HIGH : LOW);
+  }
+}
+```
 
         
