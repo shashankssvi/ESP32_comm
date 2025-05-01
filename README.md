@@ -143,5 +143,18 @@ void loop() {
   }
 }
 ```
+## Backend Server Handling
+- set up a shared Linux Server in https://www.linode.com/
+- set up MySQL Database db1
+- create table events with columns user_id, usn, date1, time1, param1, param2, param3, param4, param5
 
+- install jdk in Linode Server (only first time)
+- Develop code in Kotlin using Intellij Community Edition
+- Share REST API end-point URLs with Mobile App developer
+- Generate backend.jar and deploy in Linode Server
+
+- Develop mobile app code in Android Studio using Flutter and DART
+- Using http package, create method to post event data to server
+- Using http package, create method to get all-events data from server based on user-id
+- Display required content on mobile screen as per user requirement
         
