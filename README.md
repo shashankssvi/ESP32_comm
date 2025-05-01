@@ -13,7 +13,7 @@ Step 3:-check if led in ESP32 is blinking or not. if the light is blinking, then
 
 Step 4:- write any text on the text box and click on Get data button.     
 
-Kotlin Source Code
+**Kotlin Source Code**
 ```
 private fun bluetooth(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -23,5 +23,5 @@ private fun bluetooth(){
             bluetoothGatt = device.connectGatt(this,false,gattCallback)
             Toast.makeText(context,"connected", Toast.LENGTH_SHORT).show()
         } ```
-
+In the above block, the MAC address of the target ESP32 module can be changed depending on the hardware used.
         
