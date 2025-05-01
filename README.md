@@ -28,5 +28,108 @@ In the above block, the MAC address of the target ESP32 module can be changed de
 
 > You can access Flutter files under lib folder in main.dart
 https://github.com/shashankssvi/ESP32_comm/blob/main/bluet/lib/main.dart
+>
+> You can access Kotlin files under Android folder in MainActivity.kt https://github.com/shashankssvi/ESP32_comm/tree/main/bluet/android/app/src/main/kotlin/com/example/bluet
+>
+> What happens when you connect your Bluetooth Earphone for listening to Music
+> 1. Mobile Device will be the listener. BT Earphone will be the broadcaster.   
+> 2. Mobile Device will send a Connection Request to BT Earphone
+> 3. BT Earphone will accept the Connection Request
+> 4. Mobile Device will start sending characters (bytes of data) to BT Earphone
+> 5. BT Earphone can send commands asynchronously to Mobile Device (eg Pause, Resume, Next, Previous)
+
+Similarly
+> 1. Mobile App will be the listener. ESP32 module will be broadcaster.(GATT server)
+```private fun bluetooth(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            var bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
+            var bluetoothAdapter: BluetoothAdapter = bluetoothManager.adapter
+            val device = bluetoothAdapter.getRemoteDevice("B0:B2:1C:A7:69:62")
+            bluetoothGatt = device.connectGatt(this,false,gattCallback)
+            Toast.makeText(context,"connected", Toast.LENGTH_SHORT).show()
+        }
+    }
+```
+> 3. Mobile App will send a Connection Request through the GREEN button Connect. Check for Bluetooth Permission first.
+```private fun bluetoothPermission(){
+        if(ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_ADMIN),BLUETOOTH_PERMISSION_CODE)
+        }
+        else{
+            Toast.makeText(context,"enabled", Toast.LENGTH_SHORT).show()
+        }
+    }
+```
+> 4. ESP32 module will accept the Connection Request.  Mera Vajan is the name given to the BT device.
+```
+void setup() {
+
+  pinMode(led,OUTPUT);
+  Serial.begin(115200);
+
+  BLEDevice::init("Mera Vajan");
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  pService = pServer->createService(SERVICE_UUID);
+
+  pCharacteristic = pService->createCharacteristic(
+    CHARACTERISTIC_UUID,
+    BLECharacteristic::PROPERTY_READ |
+    BLECharacteristic::PROPERTY_WRITE |
+    BLECharacteristic::PROPERTY_NOTIFY
+  );
+
+  pCharacteristic->addDescriptor(new BLE2902());
+  pCharacteristic->setCallbacks(new MyCallbacks());
+  pCharacteristic->setValue("Mera Vajan");
+
+  pService->start();
+  BLEDevice::startAdvertising();
+}
+```
+> 6. Mobile App will send a string (eg. Good Morning ) to the ESP32 module
+```
+ private fun sendData(data:String){
+
+        val service = bluetoothGatt?.getService(UUID.fromString(SERVICE_UUID))
+        val characteristic = service?.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID))
+        val valueToSend = data.toByteArray(Charsets.UTF_8)
+
+        characteristic?.let {
+            val result = bluetoothGatt!!.writeCharacteristic(
+                it,
+                valueToSend,
+                BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+            )
+            if (result != BluetoothStatusCodes.SUCCESS) {
+                Log.e("BLE", "Write failed with status: $result")
+            }
+        }
+    }
+```
+> 8. ESP32 will receive the string and relay it back to the Mobile App
+```
+class MyCallbacks : public BLECharacteristicCallbacks {
+  void onWrite(BLECharacteristic *pCharacteristic) {
+    value = pCharacteristic->getValue().c_str();
+    pCharacteristic->setValue(value);
+    pCharacteristic->notify();
+    Serial.println(value);
+  }
+};
+```
+
+> 10. We have intentionally introduced a 2-second delay between Receive and Send 
+ ```
+ElevatedButton(onPressed: (){
+              connector("send");
+              Timer(Duration(seconds: 2),() => {
+                receive()
+              },);
+```
+>    
 
         
