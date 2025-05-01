@@ -40,7 +40,9 @@ https://github.com/shashankssvi/ESP32_comm/blob/main/bluet/lib/main.dart
 
 Similarly
 > 1. Mobile App will be the listener. ESP32 module will be broadcaster.(GATT server)
-```private fun bluetooth(){
+```
+@SuppressLint("MissingPermission")
+private fun bluetooth(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             var bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
             var bluetoothAdapter: BluetoothAdapter = bluetoothManager.adapter
